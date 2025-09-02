@@ -1,5 +1,5 @@
 package is.hi.hbv501g.sundbok;
-
+// Arnar Simonsen was here
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
