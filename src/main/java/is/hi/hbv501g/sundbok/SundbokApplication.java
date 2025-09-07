@@ -1,6 +1,7 @@
 package is.hi.hbv501g.sundbok;
 // Arnar Simonsen was here
 // Mikael was not here I was there
+// Sævar was here
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
