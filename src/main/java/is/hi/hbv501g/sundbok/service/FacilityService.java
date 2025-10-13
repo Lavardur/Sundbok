@@ -11,21 +11,25 @@ public class FacilityService {
     private final FacilityRepository facilityRepository;
 
     public FacilityService(FacilityRepository facilityRepository) {
+
         this.facilityRepository = facilityRepository;
     }
 
     // CREATE - Add new facility
     public Facility createFacility(Facility facility) {
+
         return facilityRepository.save(facility);
     }
 
     // READ - Get all facilities
     public Iterable<Facility> getAllFacilities() {
+
         return facilityRepository.findAll();
     }
 
     // READ - Get facility by ID
     public Optional<Facility> getFacilityById(Long id) {
+
         return facilityRepository.findById(id);
     }
 
@@ -42,6 +46,17 @@ public class FacilityService {
 
     // DELETE - Delete facility
     public void deleteFacility(Long id) {
+
         facilityRepository.deleteById(id);
+    }
+
+    // EXISTS
+    public boolean facilityExists(Long id) {
+        return facilityRepository.existsById(id);
+    }
+
+    // COUNT
+    public long getFacilityCount() {
+        return facilityRepository.count();
     }
 }
