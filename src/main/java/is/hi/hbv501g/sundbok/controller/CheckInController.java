@@ -3,58 +3,85 @@ package is.hi.hbv501g.sundbok.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import is.hi.hbv501g.sundbok.model.CheckIn;
+import is.hi.hbv501g.sundbok.service.CheckInService;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/checkins")
 public class CheckInController {
 
-    // GET /api/checkins - Get all check-ins
+    private final CheckInService checkInService;
+
+    public CheckInController(CheckInService checkInService) {
+        this.checkInService = checkInService;
+    }
+
+    public record CheckInDto(Long id, Long userId, Long facilityId, java.time.LocalDateTime visitedAt) {
+        public static CheckInDto from(CheckIn c) {
+            return new CheckInDto(
+                    c.getId(),
+                    c.getUser().getId(),
+                    c.getFacility().getId(),
+                    c.getVisitedAt()
+            );
+        }
+    }
+
+    // GET /api/checkins  -> DTOs
     @GetMapping
-    public ResponseEntity<Iterable<CheckIn>> getAllCheckIns() {
-        // TODO: Implementation
-        return null;
+    public ResponseEntity<List<CheckInDto>> getAllCheckIns() {
+        var list = new java.util.ArrayList<CheckInDto>();
+        checkInService.getAllCheckIns().forEach(c -> list.add(CheckInDto.from(c)));
+        return ResponseEntity.ok(list);
     }
 
-    // GET /api/checkins/{id} - Get check-in by ID
+    // GET /api/checkins/{id} -> DTO
     @GetMapping("/{id}")
-    public ResponseEntity<CheckIn> getCheckInById(@PathVariable Long id) {
-        // TODO: Implementation
-        return null;
+    public ResponseEntity<CheckInDto> getCheckInById(@PathVariable Long id) {
+        return checkInService.getCheckInById(id)
+                .map(c -> ResponseEntity.ok(CheckInDto.from(c)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // GET /api/checkins/user/{userId} - Get user's check-ins
+    // GET /api/checkins/user/{userId} -> DTOs  (this is the one in your screenshot)
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<CheckIn>> getUserCheckIns(@PathVariable Long userId) {
-        // TODO: Implementation
-        return null;
+    public ResponseEntity<List<CheckInDto>> getUserCheckIns(@PathVariable Long userId) {
+        return ResponseEntity.ok(
+                checkInService.getUserCheckIns(userId).stream()
+                        .map(CheckInDto::from)
+                        .toList()
+        );
     }
 
-    // GET /api/checkins/facility/{facilityId} - Get facility's check-ins
+    // GET /api/checkins/facility/{facilityId} -> already DTOs
     @GetMapping("/facility/{facilityId}")
-    public ResponseEntity<List<CheckIn>> getFacilityCheckIns(@PathVariable Long facilityId) {
-        // TODO: Implementation
-        return null;
+    public ResponseEntity<List<CheckInDto>> getFacilityCheckIns(@PathVariable Long facilityId) {
+        return ResponseEntity.ok(
+                checkInService.getFacilityCheckIns(facilityId).stream()
+                        .map(CheckInDto::from)
+                        .toList()
+        );
     }
 
-    // POST /api/checkins - Create new check-in
+    // POST /api/checkins -> return DTO too (optional but consistent)
     @PostMapping
-    public ResponseEntity<CheckIn> createCheckIn(@RequestParam Long userId, @RequestParam Long facilityId) {
-        // TODO: Implementation
-        return null;
+    public ResponseEntity<CheckInDto> createCheckIn(@RequestParam Long userId,
+                                                    @RequestParam Long facilityId) {
+        CheckIn saved = checkInService.checkIn(userId, facilityId);
+        return ResponseEntity
+                .created(java.net.URI.create("/api/checkins/" + saved.getId()))
+                .body(CheckInDto.from(saved));
     }
 
-    // DELETE /api/checkins/{id} - Delete check-in
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCheckIn(@PathVariable Long id) {
-        // TODO: Implementation
-        return null;
+        checkInService.deleteCheckIn(id);
+        return ResponseEntity.noContent().build();
     }
 
-    // GET /api/checkins/visited - Check if user visited facility
     @GetMapping("/visited")
-    public ResponseEntity<Boolean> hasUserVisited(@RequestParam Long userId, @RequestParam Long facilityId) {
-        // TODO: Implementation
-        return null;
+    public ResponseEntity<Boolean> hasUserVisited(@RequestParam Long userId,
+                                                  @RequestParam Long facilityId) {
+        return ResponseEntity.ok(checkInService.hasUserVisited(userId, facilityId));
     }
 }

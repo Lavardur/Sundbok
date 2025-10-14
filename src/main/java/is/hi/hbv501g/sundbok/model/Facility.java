@@ -24,6 +24,7 @@ public class Facility {
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL)
+    @com.fasterxml.jackson.annotation.JsonManagedReference("facility-checkins")
     private List<CheckIn> checkIns;
 
     // Constructors

@@ -51,7 +51,12 @@ public class CheckInService {
     public List<CheckIn> getUserCheckIns(Long userId) {
         return checkInRepository.findByUserIdOrderByVisitedAtDesc(userId);
     }
-    
+
+    // READ - Get Facility check-in history
+    public List<CheckIn> getFacilityCheckIns(Long facilityId) {
+        return checkInRepository.findByFacilityIdOrderByVisitedAtDesc(facilityId);
+    }
+
     // DELETE - Remove check-in
     public void deleteCheckIn(Long id) {
         checkInRepository.deleteById(id);

@@ -21,6 +21,7 @@ public class User {
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @com.fasterxml.jackson.annotation.JsonManagedReference("user-checkins")
     private List<CheckIn> checkIns;
 
     // Constructors

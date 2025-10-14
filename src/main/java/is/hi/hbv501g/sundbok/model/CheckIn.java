@@ -12,10 +12,12 @@ public class CheckIn {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonBackReference("user-checkins")
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "pool_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonBackReference("facility-checkins")
     private Facility facility;
 
     @Column(name = "visited_at")
