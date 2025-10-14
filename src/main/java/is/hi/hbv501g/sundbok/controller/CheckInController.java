@@ -27,7 +27,7 @@ public class CheckInController {
         }
     }
 
-    // GET /api/checkins  -> DTOs
+    // GET /api/checkins
     @GetMapping
     public ResponseEntity<List<CheckInDto>> getAllCheckIns() {
         var list = new java.util.ArrayList<CheckInDto>();
@@ -35,7 +35,7 @@ public class CheckInController {
         return ResponseEntity.ok(list);
     }
 
-    // GET /api/checkins/{id} -> DTO
+    // GET /api/checkins/{id}
     @GetMapping("/{id}")
     public ResponseEntity<CheckInDto> getCheckInById(@PathVariable Long id) {
         return checkInService.getCheckInById(id)
@@ -43,7 +43,7 @@ public class CheckInController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // GET /api/checkins/user/{userId} -> DTOs  (this is the one in your screenshot)
+    // GET /api/checkins/user/{userId}
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<CheckInDto>> getUserCheckIns(@PathVariable Long userId) {
         return ResponseEntity.ok(
@@ -53,7 +53,7 @@ public class CheckInController {
         );
     }
 
-    // GET /api/checkins/facility/{facilityId} -> already DTOs
+    // GET /api/checkins/facility/{facilityId}
     @GetMapping("/facility/{facilityId}")
     public ResponseEntity<List<CheckInDto>> getFacilityCheckIns(@PathVariable Long facilityId) {
         return ResponseEntity.ok(
@@ -63,7 +63,7 @@ public class CheckInController {
         );
     }
 
-    // POST /api/checkins -> return DTO too (optional but consistent)
+    // POST /api/checkins
     @PostMapping
     public ResponseEntity<CheckInDto> createCheckIn(@RequestParam Long userId,
                                                     @RequestParam Long facilityId) {
@@ -73,12 +73,14 @@ public class CheckInController {
                 .body(CheckInDto.from(saved));
     }
 
+    // DELETE /api/checkins
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCheckIn(@PathVariable Long id) {
         checkInService.deleteCheckIn(id);
         return ResponseEntity.noContent().build();
     }
 
+    // GET /api/checkins/visited?userId={userid}&facilityid={id}
     @GetMapping("/visited")
     public ResponseEntity<Boolean> hasUserVisited(@RequestParam Long userId,
                                                   @RequestParam Long facilityId) {
