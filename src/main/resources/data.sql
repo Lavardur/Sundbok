@@ -1,6 +1,6 @@
 -- WARNING: this will delete all rows in these tables when the SQL import runs.
 -- Truncate tables and reset sequences (PostgreSQL):
-TRUNCATE TABLE reviews, checkins, pools, users RESTART IDENTITY CASCADE;
+TRUNCATE TABLE reviews, checkins, pools, users, amenities RESTART IDENTITY CASCADE;
 
 -- Insert sample data (IDs will start at 1)
 INSERT INTO users (name, password, email, is_admin) VALUES
@@ -19,6 +19,20 @@ INSERT INTO pools (name, address) VALUES ('Klébergslaug', 'Kjalarnesi, 116 Reyk
 INSERT INTO pools (name, address) VALUES ('Laugardalslaug', 'Sundlaugavegur 30, 105 Reykjavík');
 INSERT INTO pools (name, address) VALUES ('Sundhöll Reykjavíkur', 'Barónsstígur 45a, 101 Reykjavík');
 INSERT INTO pools (name, address) VALUES ('Vesturbæjarlaug', 'Hofsvallagata, 107 Reykjavík');
+
+-- Amenity data (pool_id refers to the pools inserted above, IDs will be 1..8)
+INSERT INTO amenities (pool_id, name, type) VALUES
+    (1, 'Sauna', 'wellness'),
+    (1, 'Steam Room', 'wellness'),
+    (2, 'Water Slide', 'fun'),
+    (2, 'Children Pool', 'family'),
+    (3, 'Hot Tub', 'wellness'),
+    (4, 'Indoor Lap Pool', 'sports'),
+    (5, 'Cold Plunge', 'wellness'),
+    (6, 'Outdoor Pool', 'outdoor'),
+    (6, 'Sauna', 'wellness'),
+    (7, 'Gym', 'fitness'),
+    (8, 'Café', 'food');
 
 -- Example inserts for reviews/checkins for all users
 INSERT INTO reviews (user_id, pool_id, rating, comment) VALUES
