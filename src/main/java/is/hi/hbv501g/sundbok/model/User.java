@@ -10,11 +10,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
+
+    @Column(nullable = false)
+    private String password;
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column()
+    private Boolean isAdmin;
+
+
 
     // Relationships
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -31,6 +39,13 @@ public class User {
         this.email = email;
     }
 
+    public User(String name, String password, String email, Boolean isAdmin) {
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        this.isAdmin = isAdmin;
+    }
+
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -40,6 +55,12 @@ public class User {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public Boolean getIsAdmin() { return isAdmin; }
+    public void setIsAdmin(Boolean isAdmin) { this.isAdmin = isAdmin; }
 
     public List<Review> getReviews() { return reviews; }
     public void setReviews(List<Review> reviews) { this.reviews = reviews; }

@@ -6,7 +6,5 @@ import java.util.List;
 public interface ReviewRepository extends CrudRepository<Review, Long> {
     List<Review> findByFacilityId(Long facilityId);
     List<Review> findByUserId(Long userId);
-    void deleteById(Long id);
-    boolean existsById(Long id);
 
 }
