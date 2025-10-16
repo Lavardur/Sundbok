@@ -4,8 +4,7 @@ import is.hi.hbv501g.sundbok.model.CheckIn;
 import is.hi.hbv501g.sundbok.model.User;
 import is.hi.hbv501g.sundbok.model.Facility;
 import is.hi.hbv501g.sundbok.repository.CheckInRepository;
-import is.hi.hbv501g.sundbok.service.UserService;
-import is.hi.hbv501g.sundbok.service.FacilityService;
+
 
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -30,7 +29,7 @@ public class CheckInService {
     public CheckIn checkIn(Long userId, Long facilityId) {
         User user = userService.getUserById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
-        Facility facility = facilityService.getFacilityById(facilityId) // # TODO: facilityService
+        Facility facility = facilityService.getFacilityById(facilityId)
             .orElseThrow(() -> new RuntimeException("Facility not found"));
         
         CheckIn checkIn = new CheckIn(user, facility);
