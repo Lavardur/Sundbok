@@ -12,3 +12,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    # ensure JPA schema generation runs before SQL import
+    defer-datasource-initialization: true
+
+  # control SQL initialization with env var LOAD_SAMPLE_DATA (set to "always" to import)
+  sql:
+    init:
+      mode: ${LOAD_SAMPLE_DATA:never}
