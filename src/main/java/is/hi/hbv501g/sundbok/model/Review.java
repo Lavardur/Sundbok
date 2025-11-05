@@ -1,6 +1,7 @@
 package is.hi.hbv501g.sundbok.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "reviews")
@@ -11,10 +12,12 @@ public class Review {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference("user-reviews")
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "pool_id", nullable = false)
+    @JsonBackReference("facility-reviews")
     private Facility facility;
 
     @Column(nullable = false)

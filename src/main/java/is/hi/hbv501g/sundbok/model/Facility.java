@@ -1,5 +1,6 @@
 package is.hi.hbv501g.sundbok.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -18,12 +19,15 @@ public class Facility {
 
     // Relationships
     @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL)
+    @JsonManagedReference("facility-amenities")
     private List<Amenity> amenities;
 
     @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL)
+    @JsonManagedReference("facility-reviews")
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL)
+    @JsonManagedReference("facility-checkins")
     private List<CheckIn> checkIns;
 
     // Constructors

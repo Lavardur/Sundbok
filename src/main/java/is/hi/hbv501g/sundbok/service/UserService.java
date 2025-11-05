@@ -2,6 +2,8 @@ package is.hi.hbv501g.sundbok.service;
 
 import is.hi.hbv501g.sundbok.model.User;
 import is.hi.hbv501g.sundbok.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
@@ -9,9 +11,19 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    private boolean isBCrypt(String s) {
+        return s != null && s.matches("^\\$2[aby]?\\$\\d\\d\\$.*");
+    }
+
+    private String ensureHashed(String rawOrHash) {
+        if (rawOrHash == null || rawOrHash.isBlank()) return rawOrHash;
+        return isBCrypt(rawOrHash) ? rawOrHash : encoder.encode(rawOrHash);
     }
 
     // CREATE - Register/Create user
@@ -20,6 +32,8 @@ public class UserService {
         if (userRepository.existsByName(user.getName())) {
             throw new RuntimeException("User with name '" + user.getName() + "' already exists");
         }
+        user.setPassword(ensureHashed(user.getPassword()));
+        if (user.getIsAdmin() == null) user.setIsAdmin(false);
         System.out.println("Registering user: " + user);
         return userRepository.save(user);
     }
@@ -42,12 +56,18 @@ public class UserService {
     // UPDATE - Update existing user
     public User updateUser(Long id, User updatedUser) {
         return userRepository.findById(id)
-            .map(user -> {
-                user.setName(updatedUser.getName());
-                user.setEmail(updatedUser.getEmail());
-                return userRepository.save(user);
-            })
-            .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .map(user -> {
+                    if (updatedUser.getName() != null)   user.setName(updatedUser.getName());
+                    if (updatedUser.getEmail() != null)  user.setEmail(updatedUser.getEmail());
+                    if (updatedUser.getIsAdmin() != null) user.setIsAdmin(updatedUser.getIsAdmin());
+
+                    // Only change password if a new value is supplied
+                    if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
+                        user.setPassword(ensureHashed(updatedUser.getPassword()));
+                    }
+                    return userRepository.save(user);
+                })
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
     // DELETE - Delete user by ID

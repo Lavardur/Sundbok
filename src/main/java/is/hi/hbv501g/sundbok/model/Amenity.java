@@ -1,5 +1,6 @@
 package is.hi.hbv501g.sundbok.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,6 +12,7 @@ public class Amenity {
 
     @ManyToOne
     @JoinColumn(name = "pool_id", nullable = false)
+    @JsonBackReference("facility-amenities")
     private Facility facility;
 
     @Column(nullable = false)

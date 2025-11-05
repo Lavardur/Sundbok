@@ -2,6 +2,7 @@ package is.hi.hbv501g.sundbok.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "checkins")
@@ -12,10 +13,12 @@ public class CheckIn {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference("user-checkins")
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "pool_id", nullable = false)
+    @JsonBackReference("facility-checkins")
     private Facility facility;
 
     @Column(name = "visited_at")
