@@ -21,11 +21,27 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET,  "/api/users/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT,  "/api/users/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE,"/api/users/**").hasRole("ADMIN")
+
+                        // users
+                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()             // signup
+                        .requestMatchers(HttpMethod.GET,  "/api/users/**").permitAll()          // public read
+                        .requestMatchers(HttpMethod.PUT,  "/api/users/**").authenticated()      // owner/admin check in controller
+                        .requestMatchers(HttpMethod.DELETE,"/api/users/**").authenticated()     // owner/admin check in controller
+
+                        // facilities (admins only)
+                        .requestMatchers(HttpMethod.POST,   "/api/facilities/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,    "/api/facilities/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/facilities/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,    "/api/facilities/**").permitAll()
+
+                        // reviews & checkins (must be logged in)
+                        .requestMatchers(HttpMethod.POST, "/api/reviews/**", "/api/checkins/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT,  "/api/reviews/**", "/api/checkins/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE,"/api/reviews/**","/api/checkins/**").authenticated()
+
+                        // everything else
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(new JwtAuthFilter(jwt, users), UsernamePasswordAuthenticationFilter.class);

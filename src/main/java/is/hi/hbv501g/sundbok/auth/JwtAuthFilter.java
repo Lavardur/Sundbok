@@ -46,7 +46,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String username = claims.getSubject();
                 boolean isAdmin = Boolean.TRUE.equals(claims.get("admin", Boolean.class));
 
-                // optional: ensure user still exists
                 if (users.getUserByName(username).isPresent()) {
                     List<SimpleGrantedAuthority> auths = isAdmin
                             ? List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))

@@ -1,24 +1,26 @@
 package is.hi.hbv501g.sundbok.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import is.hi.hbv501g.sundbok.repository.FacilityRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import is.hi.hbv501g.sundbok.model.Facility;
 import is.hi.hbv501g.sundbok.service.FacilityService;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/facilities")
 public class FacilityController {
 
     private final FacilityService facilityService;
+    private final FacilityRepository facilityRepository;
 
-    public FacilityController(FacilityService facilityService) {
+    public FacilityController(FacilityService facilityService, FacilityRepository facilityRepository) {
         this.facilityService = facilityService;
-    }
-
-    // GET /api/facilities - Get all facilities
-    @GetMapping
-    public ResponseEntity<Iterable<Facility>> getAllFacilities() {
-        return ResponseEntity.ok(facilityService.getAllFacilities());
+        this.facilityRepository = facilityRepository;
     }
 
     // GET /api/facilities/{id} - Get facility by ID
@@ -65,4 +67,44 @@ public class FacilityController {
     public ResponseEntity<Boolean> facilityExists(@PathVariable Long id) {
         return ResponseEntity.ok(facilityService.facilityExists(id));
     }
+
+    @GetMapping
+    public ResponseEntity<List<Facility>> list(
+            @RequestParam Optional<Double> latitude,
+            @RequestParam Optional<Double> longitude,
+            @RequestParam(name = "radius") Optional<Double> radius,
+            @RequestParam Optional<String> search
+    ) {
+        System.out.println("params -> lat=" + latitude + ", lon=" + longitude + ", radius=" + radius + ", search=" + search);
+
+        if (search.isPresent() && !search.get().isBlank()) {
+            return ResponseEntity.ok(facilityService.searchByName(search.get()));
+        }
+        if (latitude.isPresent() && longitude.isPresent() && radius.isPresent()) {
+            return ResponseEntity.ok(facilityService.findNearby(latitude.get(), longitude.get(), radius.get()));
+        }
+        return ResponseEntity.ok((List<Facility>) facilityService.getAll());
+    }
+
+
+    // GET /pools/{id}/availability   -> returns just fjoldi
+    @GetMapping("/{id}/availability")
+    public ResponseEntity<?> getAvailability(@PathVariable Long id) {
+        return facilityRepository.findById(id)
+                .map(f -> ResponseEntity.ok(Map.of(
+                        "poolId", f.getId(),
+                        "name", f.getName(),
+                        "fjoldi", f.getFjoldi(),
+                        "updatedAt", f.getFjoldiUpdatedAt()
+                )))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // (Optional) POST /admin/refresh-fjoldi  -> manual refresh trigger
+    @PostMapping("/admin/refresh-fjoldi")
+    public ResponseEntity<?> refreshFjoldi() throws JsonProcessingException {
+        facilityService.refreshFjoldi();
+        return ResponseEntity.ok(Map.of("ok", true));
+    }
+
 }
