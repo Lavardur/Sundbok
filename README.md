@@ -7,11 +7,11 @@
 | 1 (Sept. 7–14)     | UC1, UC2, Post                 | 30 | MSK | 1 | A1 Presentation |
 | 2 (Sept. 14–21)    | UC1, UC2, Post                 | 30 | SAB | 1 | Model drafts |
 | 3 (Sept. 21–28)    | UC2, UC3, Get                 | 25 | ANB — Turn in for A2 (SAB) | 2 | A2 Turn in & Final touches |
-| 4 (Sept. 28–Oct. 5)| UC3, Get                       | 25 | ANB | 2 | A2 |
-| 5 (Oct. 5–12)      | BUC 4,5&6, Patch                      | 25 | ANB | 3 | A3 Turn in |
-| 6 (Oct. 12–19)     | BUC 7,8&9, Patch                      | 25 | AES (TURN IN ANB) | 3 | A3 Feedback & Finalization |
-| 7 (Oct. 19–26)     | BUC 10,11,12&13                       | 30 | AES (PRESENTATION ANB) | 3 | A3 Turn in (Final) |
-| 8 (Oct. 26–Nov. 2) | Leftover BUC             | 25 | AES | 4 | A4 Planning |
+| 4 (Sept. 28–Oct. 5)| UC3, Get                       | 25 | ANB | 2 | A2 Presentation |
+| 5 (Oct. 5–12)      | BUC 4,5&6, Patch                      | 25 | ANB | 3 | DEV support |
+| 6 (Oct. 12–19)     | BUC 7,8&9, Patch                      | 25 | AES (TURN IN ANB) | 3 | A3 Turn in & Final touches |
+| 7 (Oct. 19–26)     | BUC 10,11,12&13                       | 30 | AES (PRESENTATION ANB) | 3 | A3 Presentation |
+| 8 (Oct. 26–Nov. 2) | Leftover BUC             | 25 | AES | 4 | Dev support |
 | 9 (Nov. 2–9)       | Leftover BUC                   | 35 | MSK — Turn in (AES) | 4 | A4 Turn in & Final touches |
 | 10 (Nov. 9–16)     | Leftover work                  | 25 | MSK — Presentation (AES) | 4 | A4 Presentation |
 | 11 (Nov. 16–23)    | Leftover work until presentation | 25 | MSK — Presentation (MSK), Turn in (MSK) | 5 | A5 Turn in & Presentation |
