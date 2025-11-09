@@ -1,28 +1,24 @@
-# ====== Build stage ======
-FROM maven:3.9.8-eclipse-temurin-21 AS build
+# ---- Build stage ----
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copy pom.xml and download dependencies first (for caching)
+# Cache deps
 COPY pom.xml .
-RUN mvn dependency:go-offline
+RUN mvn -B -q -DskipTests dependency:go-offline
 
-# Copy source and build
+# Build
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn -B -q -DskipTests package
 
-# ====== Run stage ======
-FROM eclipse-temurin:21-jdk
+# ---- Runtime stage ----
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-# Copy the built jar from the build stage
-COPY --from=build target/Sundbok-0.0.1-SNAPSHOT.jar
+# If your JAR name differs, adjust the pattern or set <finalName>app</finalName> in pom.xml
+COPY --from=build /app/target/*-SNAPSHOT.jar /app/app.jar
 
-# Set the environment variables for Render (you can override these in Render dashboard)
-ENV SPRING_PROFILES_ACTIVE=prod \
-    PORT=8080 \
-    JAVA_OPTS="-Xms256m -Xmx512m" \
+# Good container defaults
+ENV JAVA_TOOL_OPTIONS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75"
 
 EXPOSE 8080
-
-# Run the app
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]

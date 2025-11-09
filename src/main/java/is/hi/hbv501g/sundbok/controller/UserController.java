@@ -42,7 +42,11 @@ public class UserController {
 
     // POST /api/users - Create new user
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody User user,
+                                           org.springframework.security.core.Authentication auth) {
+        // Only an existing admin may set isAdmin; otherwise false
+        boolean admin = isAdmin(auth);
+        if (!admin) user.setIsAdmin(false);
         try {
             User createdUser = userService.createUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
@@ -51,26 +55,48 @@ public class UserController {
         }
     }
 
+
+    private static boolean isAdmin(org.springframework.security.core.Authentication auth) {
+        return auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    }
+    private static String who(org.springframework.security.core.Authentication auth) {
+        return auth != null ? String.valueOf(auth.getPrincipal()) : null;
+    }
+
     // PUT /api/users/{id} - Update user
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        try {
-            User updatedUser = userService.updateUser(id, user);
-            return ResponseEntity.ok(updatedUser);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<User> updateUser(@PathVariable Long id,
+                                           @RequestBody User user,
+                                           org.springframework.security.core.Authentication auth) {
+        var target = userService.getUserById(id);
+        if (target.isEmpty()) return ResponseEntity.notFound().build();
+
+        boolean admin = isAdmin(auth);
+        String me = who(auth);
+        if (!admin && (me == null || !target.get().getName().equals(me))) {
+            return ResponseEntity.status(403).build();
         }
+        // non-admins cannot flip isAdmin
+        if (!admin) user.setIsAdmin(null);
+
+        return ResponseEntity.ok(userService.updateUser(id, user));
     }
 
     // DELETE /api/users/{id} - Delete user by ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        try {
-            userService.deleteUser(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id,
+                                           org.springframework.security.core.Authentication auth) {
+        var target = userService.getUserById(id);
+        if (target.isEmpty()) return ResponseEntity.notFound().build();
+
+        boolean admin = isAdmin(auth);
+        String me = who(auth);
+        if (!admin && (me == null || !target.get().getName().equals(me))) {
+            return ResponseEntity.status(403).build();
         }
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
     // GET /api/users/count - Get user count

@@ -1,9 +1,21 @@
+server:
+  port: ${PORT:8080}
+
+app:
+  jwt:
+    secret: ${SPRING_JWT_SECRET:breyta_tessu_teeheeeeeeeeeeeeeee}
+    ttl-ms: ${SPRING_JWT_TTL_MS:86400000}
+
 spring:
   datasource:
     url: jdbc:${DATABASE_URL}
     username: ${PGUSER}
     password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
+  security:
+    user:
+      name: dev
+      password: dev123
   
   jpa:
     hibernate:

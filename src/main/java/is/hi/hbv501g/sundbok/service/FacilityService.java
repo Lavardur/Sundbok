@@ -1,15 +1,69 @@
 package is.hi.hbv501g.sundbok.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import is.hi.hbv501g.sundbok.model.Facility;
 import is.hi.hbv501g.sundbok.repository.FacilityRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import java.time.Instant;
+import java.util.*;
 
 @Service
 public class FacilityService {
 
     private final FacilityRepository facilityRepository;
+    private final WebClient web = WebClient.create("https://rsconnect.reykjavik.is");
 
+    @Transactional
+    public void refreshFjoldi() throws JsonProcessingException {
+        // Fetch raw JSON array
+        String json = web.get().uri("/gestafjoldi_api/nuna")
+                .retrieve().bodyToMono(String.class).block();
+
+        var mapper = new ObjectMapper();
+        ArrayNode arr = (ArrayNode) mapper.readTree(json);
+
+        Map<String, Facility> byName = new HashMap<>();
+        facilityRepository.findAll().forEach(f -> byName.put(norm(f.getName()), f));
+
+        Instant now = Instant.now();
+
+        for (JsonNode node : arr) {
+            String apiName = norm(node.get("sundlaug").asText());
+            int fjoldi = node.get("fjoldi").asInt();
+            Facility f = byName.get(apiName);
+            if (f == null) continue;           // name didn’t match; skip
+            f.setFjoldi(fjoldi);
+            f.setFjoldiUpdatedAt(now);         // optional
+            facilityRepository.save(f);
+        }
+    }
+    private static String norm(String s) {
+        if (s == null) return "";
+        return java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toLowerCase(Locale.ROOT)
+                .trim();
+    }
+
+    public List<Facility> findNearby(double lat, double lng, double radius) {
+        return facilityRepository.findWithinRadius(lat, lng, radius);
+    }
+
+    public List<Facility> searchByName(String q) {
+        return facilityRepository.findByNameContainingIgnoreCase(q);
+    }
+
+    public List<Facility> getAll() {
+        List<Facility> out = new java.util.ArrayList<>();
+        facilityRepository.findAll().forEach(out::add);
+        return out;
+    }
     public FacilityService(FacilityRepository facilityRepository) {
 
         this.facilityRepository = facilityRepository;

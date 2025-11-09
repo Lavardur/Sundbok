@@ -2,6 +2,8 @@ package is.hi.hbv501g.sundbok.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
+import java.time.Instant;
 import java.util.List;
 
 @Entity
@@ -17,6 +19,13 @@ public class Facility {
     @Column(nullable = false)
     private String address;
 
+    @Column private Double latitude;
+
+    @Column private Double longitude;
+
+    @Column private Integer fjoldi;
+
+    private Instant fjoldiUpdatedAt;
     // Relationships
     @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL)
     @JsonManagedReference("facility-amenities")
@@ -56,6 +65,18 @@ public class Facility {
 
     public List<CheckIn> getCheckIns() { return checkIns; }
     public void setCheckIns(List<CheckIn> checkIns) { this.checkIns = checkIns; }
+
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+
+    public Integer getFjoldi() { return fjoldi; }
+    public void setFjoldi(Integer fjoldi) { this.fjoldi = fjoldi; }
+
+    public Instant getFjoldiUpdatedAt() { return fjoldiUpdatedAt; }
+    public void setFjoldiUpdatedAt(Instant fjoldiUpdatedAt) { this.fjoldiUpdatedAt = fjoldiUpdatedAt; }
 
     @Override
     public String toString() {
