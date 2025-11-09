@@ -1,5 +1,14 @@
 # Sundbok - Swimming Pool Review Application
 
+## Project Plan & Schedule
+
+| **Week**        | **Use Cases** | **Expected Hours** | **P.O** | **Sprint** | **Consultation**           |
+|------------------|---------------|--------------------|----------|-------------|-----------------------------|
+| 1 (Sept. 7–14)   | UC1, UC2, Post | 30 | MSK | 1 | A1 Presentation |
+| 2 (Sept. 14–21)  | UC1, UC2, Post | 30 | SAB | 1 | Model drafts |
+| 3 (Sept. 21–28)  | UC2, UC3, Get  | 25 | ANB — Turn in for A2 (SAB) | 2 | A2 Turn in & Final touches |
+| 4 (Sept. 28–Oct.5) | UC3, Get     | 25 | ANB | 2 | A2 |
+
 ## Requirements
 - Java 24
 - Maven
