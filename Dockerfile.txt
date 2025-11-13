@@ -1,0 +1,26 @@
+# --- Build stage ---
+FROM maven:3.9-eclipse-temurin-24 AS build
+
+WORKDIR /app
+
+# Copy pom and resolve deps first (for better caching)
+COPY pom.xml .
+RUN mvn -B dependency:go-offline
+
+# Now copy source and build
+COPY src ./src
+RUN mvn -B package -DskipTests
+
+# --- Run stage ---
+FROM eclipse-temurin:24-jre
+
+WORKDIR /app
+
+# Copy the built jar from the build stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose app port (change if yours is different)
+EXPOSE 8080
+
+# Spring Boot entrypoint
+ENTRYPOINT ["java", "-jar", "app.jar"]
