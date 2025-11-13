@@ -33,7 +33,7 @@ public class AuthController {
         if (u.getPassword() == null || !encoder.matches(body.password(), u.getPassword()))
             return ResponseEntity.status(401).body(Map.of("error","Invalid credentials"));
 
-        String token = jwt.generate(u.getName(), Boolean.TRUE.equals(u.getIsAdmin()));
+        String token = jwt.generate(u.getId(), u.getName(), Boolean.TRUE.equals(u.getIsAdmin()));
 
         Cookie c = new Cookie("AUTH", token);
         c.setHttpOnly(true);
@@ -41,7 +41,7 @@ public class AuthController {
         c.setMaxAge((int) Duration.ofDays(7).getSeconds());
         res.addCookie(c);
 
-        return ResponseEntity.ok(Map.of("token", token, "name", u.getName(), "isAdmin", u.getIsAdmin()));
+        return ResponseEntity.ok(Map.of("token", token, "name", u.getName(),"id", u.getId(), "isAdmin", u.getIsAdmin()));
     }
 
     @PostMapping("/logout")

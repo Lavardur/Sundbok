@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -38,6 +39,10 @@ public class Facility {
     @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL)
     @JsonManagedReference("facility-checkins")
     private List<CheckIn> checkIns;
+
+    @ElementCollection
+    @CollectionTable(name="facility_schedule", joinColumns=@JoinColumn(name="facility_id"))
+    private List<ScheduleRow> schedule = new ArrayList<>();
 
     // Constructors
     public Facility() {}
@@ -78,8 +83,34 @@ public class Facility {
     public Instant getFjoldiUpdatedAt() { return fjoldiUpdatedAt; }
     public void setFjoldiUpdatedAt(Instant fjoldiUpdatedAt) { this.fjoldiUpdatedAt = fjoldiUpdatedAt; }
 
+    public List<ScheduleRow> getSchedule(){ return schedule; }
+    public void setSchedule(List<ScheduleRow> s){ this.schedule = s; }
+
     @Override
     public String toString() {
         return "Facility{id=" + id + ", name='" + name + "', address='" + address + "'}";
+    }
+    @Embeddable
+    public static class ScheduleRow {
+        // 1=Monday … 7=Sunday for simplicity
+        private int dayOfWeek;
+        private String open;   // "06:30"
+        private String close;  // "22:00"
+        private String notes;
+
+        // getters/setters
+        public ScheduleRow() {}
+
+        public int getDayOfWeek() { return dayOfWeek; }
+        public void setDayOfWeek(int dayOfWeek) { this.dayOfWeek = dayOfWeek; }
+
+        public String getOpen() { return open; }
+        public void setOpen(String open) { this.open = open; }
+
+        public String getClose() { return close; }
+        public void setClose(String close) { this.close = close; }
+
+        public String getNotes() { return notes; }
+        public void setNotes(String notes) { this.notes = notes; }
     }
 }

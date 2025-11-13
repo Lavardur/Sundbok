@@ -1,9 +1,13 @@
 package is.hi.hbv501g.sundbok.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+
+import java.util.HashSet;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -35,6 +39,28 @@ public class User {
     @JsonManagedReference("user-checkins")
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<CheckIn> checkIns;
+
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(name="user_favorite_facilities",
+            joinColumns=@JoinColumn(name="user_id"),
+            inverseJoinColumns=@JoinColumn(name="facility_id"))
+    private Set<Facility> favoriteFacilities = new HashSet<>();
+
+    // Minimal “accepted friends only” self-relation (no pending state)
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(name="user_friends",
+            joinColumns=@JoinColumn(name="user_id"),
+            inverseJoinColumns=@JoinColumn(name="friend_id"))
+    private Set<User> friends = new HashSet<>();
+
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(name="user_subscriptions",
+            joinColumns=@JoinColumn(name="user_id"),
+            inverseJoinColumns=@JoinColumn(name="facility_id"))
+    private Set<Facility> subscriptions = new HashSet<>();
 
     // Constructors
     public User() {}
@@ -77,4 +103,10 @@ public class User {
     public String toString() {
         return "User{id=" + id + ", name='" + name + "', email='" + email + "'}";
     }
+
+    public Set<Facility> getFavoriteFacilities(){ return favoriteFacilities; }
+
+    public Set<User> getFriends(){ return friends; }
+
+    public Set<Facility> getSubscriptions(){ return subscriptions; }
 }

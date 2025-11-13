@@ -1,0 +1,1178 @@
+{
+	"info": {
+		"_postman_id": "932e5b4b-7925-4bf8-8dc3-c59c336641b3",
+		"name": "Sundbok Backend (Local)",
+		"description": "Full Postman collection for your real Java backend code.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49834271",
+		"_collection_link": "https://admentus-dragon-2490304.postman.co/workspace/Admentus's-Workspace~c43900f1-165e-4503-80ba-f77ace6666a4/collection/49834271-932e5b4b-7925-4bf8-8dc3-c59c336641b3?action=share&source=collection_link&creator=49834271"
+	},
+	"item": [
+		{
+			"name": "AUTHENTICATION",
+			"item": [
+				{
+					"name": "Signup - alice2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {\r",
+									"  const data = pm.response.json();\r",
+									"  pm.environment.set(\"alicename\", data.name);\r",
+									"  pm.environment.set(\"aliceId\", data.id); \r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"alice2\",\r\n  \"email\": \"alice2@example.com\",\r\n  \"password\": \"Password123!\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{name}}\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {\r",
+									"  const data = pm.response.json();\r",
+									"  pm.environment.set(\"loginName\", data.name);\r",
+									"  pm.environment.set(\"token_login\", data.token);\r",
+									"  pm.environment.set(\"loginId\", data.id); \r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{loginName}}\",\n  \"password\": \"{{loginPassword}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "USERS",
+			"item": [
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{adminId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{adminId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Favorite Facility",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}/favorites/{{facilityId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}",
+								"favorites",
+								"{{facilityId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Favorites",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}/favorites",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}",
+								"favorites"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Favorite",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}/favorites/{{facilityId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}",
+								"favorites",
+								"{{facilityId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Friends",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}/friends",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}",
+								"friends"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Friend",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}/friends/{{friendId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}",
+								"friends",
+								"{{friendId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Friend",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}/friends/{{friendId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}",
+								"friends",
+								"{{friendId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Subscriptions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}/subscriptions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}",
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscribe to Facility",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}/subscriptions/{{facilityId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}",
+								"subscriptions",
+								"{{facilityId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unsubscribe from Facility",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}/subscriptions/{{facilityId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}",
+								"subscriptions",
+								"{{facilityId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search by name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/search?name=Mikael",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"search"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Mikael"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User-count",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/count",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"count"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User-exists by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/exists/{{adminId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"exists",
+								"{{adminId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete-user by ID(admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{aliceId}}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{aliceId}}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update - user",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{id}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create-new user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FACILITIES",
+			"item": [
+				{
+					"name": "Create Facility (admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{facilityName}}\",\n  \"address\": \"{{address}}\",\n  \"latitude\": {{lat}},\n  \"longitude\": {{lng}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/facilities",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"facilities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Facility by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/facilities/{{facilityId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"facilities",
+								"{{facilityId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List all Facilities",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/facilities",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"facilities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Facilities by Name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/facilities?search={{query}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"facilities"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "{{query}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find Nearby Facilities",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/facilities?latitude={{latitude}}&longitude={{longitude}}&radius={{radius}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"facilities"
+							],
+							"query": [
+								{
+									"key": "latitude",
+									"value": "{{latitude}}"
+								},
+								{
+									"key": "longitude",
+									"value": "{{longitude}}"
+								},
+								{
+									"key": "radius",
+									"value": "{{radius}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Availability",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/facilities/{{facilityId}}/availability",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"facilities",
+								"{{facilityId}}",
+								"availability"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Schedule",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/facilities/{{facilityId}}/schedule",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"facilities",
+								"{{facilityId}}",
+								"schedule"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Schedule (admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  { \"dayOfWeek\": 1, \"open\": \"06:00\", \"close\": \"22:00\", \"notes\": \"\" }\n]"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/facilities/{{facilityId}}/schedule",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"facilities",
+								"{{facilityId}}",
+								"schedule"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Fjöldi (admin)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/facilities/admin/refresh-fjoldi",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"facilities",
+								"admin",
+								"refresh-fjoldi"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check if facility exists by Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/facilities/exists/{{facilityId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"facilities",
+								"exists",
+								"{{facilityId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get facility count",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/facilities/count",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"facilities",
+								"count"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete facility by Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/facilities/{{facilityId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"facilities",
+								"{{facilityId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update-facility by Id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AMENITIES",
+			"item": [
+				{
+					"name": "Create Amenity (admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"facility\": { \"id\": 1 },\n  \"name\": \"Hot Tub\",\n  \"type\": \"HOTTUB\"\n}\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/amenities",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"amenities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Amenity by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/amenities/{{amenityId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"amenities",
+								"{{amenityId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all amenities",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get all amenities by facility",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Update amenitiy by id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Delete amenity by Id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "REVIEWS (Pool reviews)",
+			"item": [
+				{
+					"name": "Create Review",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rating\": 5,\n  \"comment\": \"Nice pool!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/reviews/{{facilityId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"reviews",
+								"{{facilityId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reviews for Facility",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/reviews?facility={{facilityId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"reviews"
+							],
+							"query": [
+								{
+									"key": "facility",
+									"value": "{{facilityId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all reviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get review by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/reviews/{{reviewId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"reviews",
+								"{{reviewId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reviews by user Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/reviews/user/{{adminId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"reviews",
+								"user",
+								"{{adminId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Average facility rating by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/reviews/facility/{{facilityId}}/average-rating",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"reviews",
+								"facility",
+								"{{facilityId}}",
+								"average-rating"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update review by id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/reviews/{{reviewId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"reviews",
+								"{{reviewId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete review by Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/reviews/{{reviewId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"reviews",
+								"{{reviewId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CHECKINS",
+			"item": [
+				{
+					"name": "Create Checkin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/checkins/{{facilityId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"checkins",
+								"{{facilityId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Checkins for User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}/checkins",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}",
+								"checkins"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check if user visited facility",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/checkins/visited",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"checkins",
+								"visited"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete checkin",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/checkins/{{checkinId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"checkins",
+								"{{checkinId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a check in by ids",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/checkins",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"checkins"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get check ins for facility",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/checkins/facility/{{facilityId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"checkins",
+								"facility",
+								"{{facilityId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get check in by checkinId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/checkins/{{checkinId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"checkins",
+								"{{checkinId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

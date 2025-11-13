@@ -1,20 +1,27 @@
 package is.hi.hbv501g.sundbok.service;
 
+import is.hi.hbv501g.sundbok.model.Facility;
 import is.hi.hbv501g.sundbok.model.User;
+import is.hi.hbv501g.sundbok.repository.FacilityRepository;
 import is.hi.hbv501g.sundbok.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FacilityRepository facilityRepository;
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, FacilityRepository facilityRepository) {
         this.userRepository = userRepository;
+        this.facilityRepository = facilityRepository;
     }
 
     private boolean isBCrypt(String s) {
@@ -109,4 +116,54 @@ public class UserService {
     public Iterable<User> get() {
         return getAllUsers();
     }
+    @Transactional
+    public Set<Facility> addFavorite(Long userId, Long facilityId){
+        User u = userRepository.findById(userId).orElseThrow();
+        Facility f = facilityRepository.findById(facilityId).orElseThrow();
+        u.getFavoriteFacilities().add(f);
+        return u.getFavoriteFacilities();
+    }
+
+    @Transactional
+    public Set<Facility> removeFavorite(Long userId, Long facilityId){
+        User u = userRepository.findById(userId).orElseThrow();
+        Facility f = facilityRepository.findById(facilityId).orElseThrow();
+        u.getFavoriteFacilities().remove(f);
+        return u.getFavoriteFacilities();
+    }
+
+    @Transactional
+    public Set<User> addFriendship(Long meId, Long otherId){
+        if (meId.equals(otherId)) throw new RuntimeException("Cannot friend yourself");
+        User me = userRepository.findById(meId).orElseThrow();
+        User other = userRepository.findById(otherId).orElseThrow();
+        me.getFriends().add(other);
+        other.getFriends().add(me);           // keep it mutual
+        return me.getFriends();
+    }
+
+    @Transactional
+    public void removeFriendship(Long meId, Long otherId){
+        User me = userRepository.findById(meId).orElseThrow();
+        User other = userRepository.findById(otherId).orElseThrow();
+        me.getFriends().remove(other);
+        other.getFriends().remove(me);
+    }
+
+    @Transactional
+    public Set<Facility> subscribe(Long userId, Long facilityId){
+        User u = userRepository.findById(userId).orElseThrow();
+        Facility f = facilityRepository.findById(facilityId).orElseThrow();
+        u.getSubscriptions().add(f);
+        return u.getSubscriptions();
+    }
+
+    @Transactional
+    public Set<Facility> unsubscribe(Long userId, Long facilityId){
+        User u = userRepository.findById(userId).orElseThrow();
+        Facility f = facilityRepository.findById(facilityId).orElseThrow();
+        u.getSubscriptions().remove(f);
+        return u.getSubscriptions();
+    }
+
 }

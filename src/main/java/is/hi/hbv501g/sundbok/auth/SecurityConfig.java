@@ -41,6 +41,17 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,  "/api/reviews/**", "/api/checkins/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE,"/api/reviews/**","/api/checkins/**").authenticated()
 
+                        .requestMatchers(HttpMethod.GET,"/api/users/*/favorites/**").authenticated()
+                        .requestMatchers(HttpMethod.POST,"/api/users/*/favorites/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE,"/api/users/*/favorites/**").authenticated()
+
+                        .requestMatchers(HttpMethod.GET,"/api/users/*/friends/**").authenticated()
+                        .requestMatchers(HttpMethod.POST,"/api/users/*/friends/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE,"/api/users/*/friends/**").authenticated()
+
+                        .requestMatchers(HttpMethod.GET,"/api/users/*/subscriptions/**").authenticated()
+                        .requestMatchers(HttpMethod.POST,"/api/users/*/subscriptions/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE,"/api/users/*/subscriptions/**").authenticated()
                         // everything else
                         .anyRequest().permitAll()
                 )

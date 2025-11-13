@@ -22,11 +22,14 @@ public class JwtUtil {
         this.expiryMs = expiryMs;
     }
 
-    public String generate(String name, boolean isAdmin) {
+    public String generate(Long userId, String name, boolean isAdmin) {
         Date now = new Date();
         return Jwts.builder()
                 .setSubject(name)
-                .addClaims(Map.of("admin", isAdmin))
+                .addClaims(Map.of(
+                        "id", userId,
+                        "admin", isAdmin
+                ))
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + expiryMs))
                 .signWith(key, SignatureAlgorithm.HS256)

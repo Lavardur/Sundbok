@@ -106,5 +106,19 @@ public class FacilityController {
         facilityService.refreshFjoldi();
         return ResponseEntity.ok(Map.of("ok", true));
     }
+    @GetMapping("/{facilityId}/schedule")
+    public ResponseEntity<List<Facility.ScheduleRow>> getSchedule(@PathVariable Long facilityId){
+        return ResponseEntity.ok(facilityService.getSchedule(facilityId));
+    }
+
+    @PutMapping("/{facilityId}/schedule")
+    public ResponseEntity<List<Facility.ScheduleRow>> putSchedule(
+            @PathVariable Long facilityId,
+            @RequestBody List<Facility.ScheduleRow> rows
+    ) {
+        return ResponseEntity.ok(facilityService.replaceSchedule(facilityId, rows));
+    }
+
+
 
 }

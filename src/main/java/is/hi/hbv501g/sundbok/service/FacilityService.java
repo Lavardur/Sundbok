@@ -113,4 +113,15 @@ public class FacilityService {
     public long getFacilityCount() {
         return facilityRepository.count();
     }
+    @Transactional
+    public List<Facility.ScheduleRow> replaceSchedule(Long facilityId, List<Facility.ScheduleRow> rows){
+        Facility fac = facilityRepository.findById(facilityId).orElseThrow();
+        fac.setSchedule(rows);
+        return fac.getSchedule();
+    }
+
+    public List<Facility.ScheduleRow> getSchedule(Long facilityId){
+        return facilityRepository.findById(facilityId).orElseThrow().getSchedule();
+    }
+
 }
