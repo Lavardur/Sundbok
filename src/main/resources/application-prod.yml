@@ -1,0 +1,33 @@
+server:
+  port: ${PORT:8080}
+
+app:
+  jwt:
+    secret: ${SPRING_JWT_SECRET:breyta_tessu_teeheeeeeeeeeeeeeee}
+    ttl-ms: ${SPRING_JWT_TTL_MS:86400000}
+
+spring:
+  datasource:
+    url: jdbc:${DATABASE_URL}
+    username: ${PGUSER}
+    password: ${PGPASSWORD}
+    driver-class-name: org.postgresql.Driver
+  security:
+    user:
+      name: dev
+      password: dev123
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    # ensure JPA schema generation runs before SQL import
+    defer-datasource-initialization: true
+
+  # control SQL initialization with env var LOAD_SAMPLE_DATA (set to "always" to import)
+  sql:
+    init:
+      mode: ${LOAD_SAMPLE_DATA:never}
