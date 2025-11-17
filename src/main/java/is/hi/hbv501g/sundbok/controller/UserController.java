@@ -199,9 +199,9 @@ public class UserController {
     }
     // GET /api/users/{id}/profile-picture  (public read)
     @GetMapping("/{id}/profile-picture")
-    public ResponseEntity<byte[]> getProfilePicture(@PathVariable Long id) {
+    public ResponseEntity<byte[]> getProfilePicture(@PathVariable("id") Long userId) {
         try {
-            byte[] data = userService.getProfilePicture(id);
+            byte[] data = userService.getProfilePicture(userId);
             if (data == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -215,13 +215,15 @@ public class UserController {
 
     // PUT /api/users/{id}/profile-picture  (user can only change their own)
     @PutMapping(path = "/{id}/profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> uploadProfilePicture(@PathVariable Long id,@RequestParam("file") MultipartFile file, org.springframework.security.core.Authentication auth) {
-        if (!isSelf(id, auth)) {
+    public ResponseEntity<Void> uploadProfilePicture(@PathVariable("id") Long userId,
+                                                     @RequestParam("file") MultipartFile file,
+                                                     org.springframework.security.core.Authentication auth) {
+        if (!isSelf(userId, auth)) {
             return ResponseEntity.status(403).build();
         }
         try {
             byte[] compressed = toCompressedJpeg(file, 600, 0.4f);
-            userService.updateProfilePicture(id, compressed);
+            userService.updateProfilePicture(userId, compressed);
             return ResponseEntity.noContent().build();
         } catch (IOException | IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -230,13 +232,15 @@ public class UserController {
 
     // DELETE /api/users/{id}/profile-picture  (self only)
     @DeleteMapping("/{id}/profile-picture")
-    public ResponseEntity<Void> deleteProfilePicture(@PathVariable Long id,org.springframework.security.core.Authentication auth) {
-        if (!isSelf(id, auth)) {
+    public ResponseEntity<Void> deleteProfilePicture(@PathVariable("id") Long userId,
+                                                     org.springframework.security.core.Authentication auth) {
+        if (!isSelf(userId, auth)) {
             return ResponseEntity.status(403).build();
         }
-        userService.deleteProfilePicture(id);
+        userService.deleteProfilePicture(userId);
         return ResponseEntity.noContent().build();
     }
+
 
     private byte[] toCompressedJpeg(MultipartFile file, int maxSize, float quality) throws IOException {
         BufferedImage img = ImageIO.read(file.getInputStream());
