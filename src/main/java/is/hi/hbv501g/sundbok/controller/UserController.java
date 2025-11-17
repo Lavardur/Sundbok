@@ -4,10 +4,23 @@ import is.hi.hbv501g.sundbok.auth.UserPrincipal;
 import is.hi.hbv501g.sundbok.model.Facility;
 import is.hi.hbv501g.sundbok.model.User;
 import is.hi.hbv501g.sundbok.service.UserService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -184,5 +197,90 @@ public class UserController {
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
         return ResponseEntity.ok(userService.unsubscribe(userId, facilityId));
     }
+    // GET /api/users/{id}/profile-picture  (public read)
+    @GetMapping("/{id}/profile-picture")
+    public ResponseEntity<byte[]> getProfilePicture(@PathVariable Long id) {
+        try {
+            byte[] data = userService.getProfilePicture(id);
+            if (data == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE)
+                    .body(data);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // PUT /api/users/{id}/profile-picture  (user can only change their own)
+    @PutMapping(path = "/{id}/profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> uploadProfilePicture(@PathVariable Long id,@RequestParam("file") MultipartFile file, org.springframework.security.core.Authentication auth) {
+        if (!isSelf(id, auth)) {
+            return ResponseEntity.status(403).build();
+        }
+        try {
+            byte[] compressed = toCompressedJpeg(file, 600, 0.4f);
+            userService.updateProfilePicture(id, compressed);
+            return ResponseEntity.noContent().build();
+        } catch (IOException | IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // DELETE /api/users/{id}/profile-picture  (self only)
+    @DeleteMapping("/{id}/profile-picture")
+    public ResponseEntity<Void> deleteProfilePicture(@PathVariable Long id,org.springframework.security.core.Authentication auth) {
+        if (!isSelf(id, auth)) {
+            return ResponseEntity.status(403).build();
+        }
+        userService.deleteProfilePicture(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    private byte[] toCompressedJpeg(MultipartFile file, int maxSize, float quality) throws IOException {
+        BufferedImage img = ImageIO.read(file.getInputStream());
+        if (img == null) {
+            throw new IllegalArgumentException("Uploaded file is not an image");
+        }
+
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int max = Math.max(w, h);
+
+        // scale down if needed
+        if (max > maxSize) {
+            double scale = (double) maxSize / max;
+            int newW = (int) (w * scale);
+            int newH = (int) (h * scale);
+
+            Image scaled = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+            BufferedImage resized = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2 = resized.createGraphics();
+            g2.drawImage(scaled, 0, 0, null);
+            g2.dispose();
+            img = resized;
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
+        if (!writers.hasNext()) {
+            throw new IllegalStateException("No JPEG writer available");
+        }
+        ImageWriter writer = writers.next();
+        try (ImageOutputStream ios = ImageIO.createImageOutputStream(baos)) {
+            writer.setOutput(ios);
+            ImageWriteParam param = writer.getDefaultWriteParam();
+            if (param.canWriteCompressed()) {
+                param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                param.setCompressionQuality(quality); // 0.0–1.0 (lower = smaller)
+            }
+            writer.write(null, new IIOImage(img, null, null), param);
+        } finally {
+            writer.dispose();
+        }
+        return baos.toByteArray();
+    }
+
 
 }

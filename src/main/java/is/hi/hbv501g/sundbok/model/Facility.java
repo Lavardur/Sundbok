@@ -1,5 +1,6 @@
 package is.hi.hbv501g.sundbok.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -113,4 +114,66 @@ public class Facility {
         public String getNotes() { return notes; }
         public void setNotes(String notes) { this.notes = notes; }
     }
+    @Lob @Basic(fetch = FetchType.LAZY) @JsonIgnore
+    private byte[] image1;
+
+    @Lob @Basic(fetch = FetchType.LAZY) @JsonIgnore
+    private byte[] image2;
+
+    @Lob @Basic(fetch = FetchType.LAZY) @JsonIgnore
+    private byte[] image3;
+
+    @Lob @Basic(fetch = FetchType.LAZY) @JsonIgnore
+    private byte[] image4;
+
+    @Lob @Basic(fetch = FetchType.LAZY) @JsonIgnore
+    private byte[] image5;
+
+    @Lob @Basic(fetch = FetchType.LAZY) @JsonIgnore
+    private byte[] image6;
+
+    @Lob @Basic(fetch = FetchType.LAZY) @JsonIgnore
+    private byte[] image7;
+
+    @Lob @Basic(fetch = FetchType.LAZY) @JsonIgnore
+    private byte[] image8;
+
+    @Lob @Basic(fetch = FetchType.LAZY) @JsonIgnore
+    private byte[] image9;
+
+    @Lob @Basic(fetch = FetchType.LAZY) @JsonIgnore
+    private byte[] image10;
+    public byte[] getImage(int index) {
+        return switch (index) {
+            case 1 -> image1;
+            case 2 -> image2;
+            case 3 -> image3;
+            case 4 -> image4;
+            case 5 -> image5;
+            case 6 -> image6;
+            case 7 -> image7;
+            case 8 -> image8;
+            case 9 -> image9;
+            case 10 -> image10;
+            default -> throw new IllegalArgumentException("Image index must be 1–10");
+        };
+    }
+
+    public void setImage(int index, byte[] data) {
+        switch (index) {
+            case 1 -> image1 = data;
+            case 2 -> image2 = data;
+            case 3 -> image3 = data;
+            case 4 -> image4 = data;
+            case 5 -> image5 = data;
+            case 6 -> image6 = data;
+            case 7 -> image7 = data;
+            case 8 -> image8 = data;
+            case 9 -> image9 = data;
+            case 10 -> image10 = data;
+            default -> throw new IllegalArgumentException("Image index must be 1–10");
+        }
+    }
+
+
 }
