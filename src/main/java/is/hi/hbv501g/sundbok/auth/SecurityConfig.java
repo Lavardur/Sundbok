@@ -42,7 +42,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/amenities/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,    "/api/amenities/**").permitAll()
 
-
                         // reviews & checkins (must be logged in)
                         .requestMatchers(HttpMethod.POST, "/api/reviews/**", "/api/checkins/**").authenticated()
                         .requestMatchers(HttpMethod.PUT,  "/api/reviews/**", "/api/checkins/**").authenticated()

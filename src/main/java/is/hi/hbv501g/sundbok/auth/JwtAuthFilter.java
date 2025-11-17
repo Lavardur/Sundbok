@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -44,12 +45,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 var claims = jwt.parse(token).getBody();
                 Long id = claims.get("id", Integer.class).longValue();
-                String username = claims.getSubject();
-                boolean isAdmin = claims.get("admin", Boolean.class);
 
-                var principal = new UserPrincipal(id, username, isAdmin);
+                var optUser = users.getUserById(id);
+                if (optUser.isPresent()) {
+                    var u = optUser.get();
+                    String username = u.getName(); // always current name from DB
+                    boolean isAdmin = Boolean.TRUE.equals(u.getIsAdmin());
 
-                if (users.getUserByName(username).isPresent()) {
+                    var principal = new UserPrincipal(u.getId(), username, isAdmin);
+
                     List<SimpleGrantedAuthority> auths =
                             isAdmin ? List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
                                     : List.of(new SimpleGrantedAuthority("ROLE_USER"));
@@ -57,8 +61,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     var auth = new UsernamePasswordAuthenticationToken(principal, null, auths);
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+                // invalid token -> no auth, same as before
+            }
         }
+
 
         chain.doFilter(req, res);
     }
