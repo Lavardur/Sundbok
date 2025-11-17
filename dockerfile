@@ -1,5 +1,5 @@
 # ---- Build stage ----
-FROM maven:3.9-eclipse-temurin-21 AS build
+FROM maven:3.9-eclipse-temurin-24 AS build
 WORKDIR /app
 
 # Cache deps
@@ -11,7 +11,7 @@ COPY src ./src
 RUN mvn -B -q -DskipTests package
 
 # ---- Runtime stage ----
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:24-jre
 WORKDIR /app
 
 # If your JAR name differs, adjust the pattern or set <finalName>app</finalName> in pom.xml
