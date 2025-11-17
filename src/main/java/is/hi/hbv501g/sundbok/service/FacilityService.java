@@ -123,5 +123,58 @@ public class FacilityService {
     public List<Facility.ScheduleRow> getSchedule(Long facilityId){
         return facilityRepository.findById(facilityId).orElseThrow().getSchedule();
     }
+    @Transactional
+    public void addFacilityImage(Long facilityId, byte[] data) {
+        Facility f = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new RuntimeException("Facility not found with id: " + facilityId));
+
+        for (int i = 1; i <= 10; i++) {
+            if (f.getImage(i) == null) {
+                f.setImage(i, data);
+                return;
+            }
+        }
+        throw new IllegalStateException("Facility already has 10 images");
+    }
+
+    @Transactional
+    public void setFacilityImage(Long facilityId, int index, byte[] data) {
+        if (index < 1 || index > 10) {
+            throw new IllegalArgumentException("Image index must be 1–10");
+        }
+        Facility f = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new RuntimeException("Facility not found with id: " + facilityId));
+        f.setImage(index, data);
+    }
+
+    @Transactional
+    public void deleteFacilityImage(Long facilityId, int index) {
+        if (index < 1 || index > 10) {
+            throw new IllegalArgumentException("Image index must be 1–10");
+        }
+        Facility f = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new RuntimeException("Facility not found with id: " + facilityId));
+        f.setImage(index, null);
+    }
+
+    public byte[] getFacilityImage(Long facilityId, int index) {
+        if (index < 1 || index > 10) {
+            throw new IllegalArgumentException("Image index must be 1–10");
+        }
+        Facility f = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new RuntimeException("Facility not found with id: " + facilityId));
+        return f.getImage(index);
+    }
+
+    public java.util.List<Integer> listFacilityImages(Long facilityId) {
+        Facility f = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new RuntimeException("Facility not found with id: " + facilityId));
+        java.util.List<Integer> out = new java.util.ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            if (f.getImage(i) != null) out.add(i);
+        }
+        return out;
+    }
+
 
 }

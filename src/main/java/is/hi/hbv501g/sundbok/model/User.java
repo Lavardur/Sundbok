@@ -109,4 +109,18 @@ public class User {
     public Set<User> getFriends(){ return friends; }
 
     public Set<Facility> getSubscriptions(){ return subscriptions; }
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private byte[] profilePicture;
+
+    public byte[] getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(byte[] profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
 }

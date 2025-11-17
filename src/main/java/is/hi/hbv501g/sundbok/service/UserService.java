@@ -165,5 +165,27 @@ public class UserService {
         u.getSubscriptions().remove(f);
         return u.getSubscriptions();
     }
+    @Transactional
+    public void updateProfilePicture(Long userId, byte[] image) {
+        User u = userRepository.findById(userId).orElseThrow(
+                () -> new RuntimeException("User not found with id: " + userId)
+        );
+        u.setProfilePicture(image);
+    }
+
+    @Transactional
+    public void deleteProfilePicture(Long userId) {
+        User u = userRepository.findById(userId).orElseThrow(
+                () -> new RuntimeException("User not found with id: " + userId)
+        );
+        u.setProfilePicture(null);
+    }
+
+    public byte[] getProfilePicture(Long userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new RuntimeException("User not found with id: " + userId)
+        ).getProfilePicture();
+    }
+
 
 }
