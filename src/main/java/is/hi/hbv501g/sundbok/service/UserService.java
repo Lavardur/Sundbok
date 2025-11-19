@@ -1,6 +1,7 @@
 package is.hi.hbv501g.sundbok.service;
 
 import is.hi.hbv501g.sundbok.model.Facility;
+import is.hi.hbv501g.sundbok.model.Notification;
 import is.hi.hbv501g.sundbok.model.User;
 import is.hi.hbv501g.sundbok.repository.FacilityRepository;
 import is.hi.hbv501g.sundbok.repository.UserRepository;
@@ -9,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -17,11 +19,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FacilityRepository facilityRepository;
+    private final NotificationService notificationService;
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public UserService(UserRepository userRepository, FacilityRepository facilityRepository) {
+    public UserService(UserRepository userRepository, FacilityRepository facilityRepository,NotificationService notificationService) {
         this.userRepository = userRepository;
         this.facilityRepository = facilityRepository;
+        this.notificationService = notificationService;
     }
 
     private boolean isBCrypt(String s) {
@@ -116,13 +120,33 @@ public class UserService {
     public Iterable<User> get() {
         return getAllUsers();
     }
+    @Transactional(readOnly = true)
+    public Set<Facility> getFavoriteFacilities(Long userId) {
+        User u = userRepository.findById(userId).orElseThrow();
+        return new HashSet<>(u.getFavoriteFacilities());
+    }
     @Transactional
     public Set<Facility> addFavorite(Long userId, Long facilityId){
         User u = userRepository.findById(userId).orElseThrow();
         Facility f = facilityRepository.findById(facilityId).orElseThrow();
         u.getFavoriteFacilities().add(f);
+
+        // Notify followers that user added a favorite
+        var followers = new HashSet<>(userRepository.findFollowersOf(u.getId()));
+        if (!followers.isEmpty()) {
+            String msg = u.getName() + " added " + f.getName() + " to favorites";
+            notificationService.createForUsers(
+                    followers,
+                    Notification.Type.FRIEND_FAVORITE,
+                    msg,
+                    f.getId(),
+                    u.getId()
+            );
+        }
+
         return u.getFavoriteFacilities();
     }
+
 
     @Transactional
     public Set<Facility> removeFavorite(Long userId, Long facilityId){
@@ -138,7 +162,6 @@ public class UserService {
         User me = userRepository.findById(meId).orElseThrow();
         User other = userRepository.findById(otherId).orElseThrow();
         me.getFriends().add(other);
-        other.getFriends().add(me);           // keep it mutual
         return me.getFriends();
     }
 
@@ -147,8 +170,14 @@ public class UserService {
         User me = userRepository.findById(meId).orElseThrow();
         User other = userRepository.findById(otherId).orElseThrow();
         me.getFriends().remove(other);
-        other.getFriends().remove(me);
     }
+    @Transactional(readOnly = true)
+    public Set<User> getFriends(Long userId) {
+        return new HashSet<>(userRepository.findById(userId)
+                .orElseThrow()
+                .getFriends());
+    }
+
 
     @Transactional
     public Set<Facility> subscribe(Long userId, Long facilityId){
@@ -157,13 +186,17 @@ public class UserService {
         u.getSubscriptions().add(f);
         return u.getSubscriptions();
     }
-
     @Transactional
     public Set<Facility> unsubscribe(Long userId, Long facilityId){
         User u = userRepository.findById(userId).orElseThrow();
         Facility f = facilityRepository.findById(facilityId).orElseThrow();
         u.getSubscriptions().remove(f);
         return u.getSubscriptions();
+    }
+    @Transactional(readOnly = true)
+    public Set<Facility> getSubscriptions(Long userId) {
+        User u = userRepository.findById(userId).orElseThrow();
+        return new HashSet<>(u.getSubscriptions());
     }
     @Transactional
     public void updateProfilePicture(Long userId, byte[] image) {

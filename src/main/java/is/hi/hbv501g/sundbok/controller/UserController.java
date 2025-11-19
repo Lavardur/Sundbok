@@ -3,6 +3,7 @@ package is.hi.hbv501g.sundbok.controller;
 import is.hi.hbv501g.sundbok.auth.UserPrincipal;
 import is.hi.hbv501g.sundbok.model.Facility;
 import is.hi.hbv501g.sundbok.model.User;
+import is.hi.hbv501g.sundbok.service.NotificationService;
 import is.hi.hbv501g.sundbok.service.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,9 +30,11 @@ import java.util.Set;
 public class UserController {
 
     private final UserService userService;
+    private final NotificationService notificationService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService,NotificationService notificationService) {
         this.userService = userService;
+        this.notificationService = notificationService;
     }
 
     // GET /api/users - Get all users
@@ -134,11 +137,13 @@ public class UserController {
     public ResponseEntity<Boolean> userExists(@PathVariable Long id) {
         return ResponseEntity.ok(userService.userExists(id));
     }
+
     // GET my favorites
     @GetMapping("/{userId}/favorites")
-    public ResponseEntity<Set<Facility>> favorites(@PathVariable Long userId, org.springframework.security.core.Authentication auth){
+    public ResponseEntity<Set<Facility>> favorites(@PathVariable Long userId,
+                                                   org.springframework.security.core.Authentication auth){
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
-        return ResponseEntity.ok(userService.getUserById(userId).orElseThrow().getFavoriteFacilities());
+        return ResponseEntity.ok(userService.getFavoriteFacilities(userId));
     }
 
     // POST add favorite
@@ -157,10 +162,11 @@ public class UserController {
 
     // GET my friends
     @GetMapping("/{userId}/friends")
-    public ResponseEntity<Set<User>> friends(@PathVariable Long userId, org.springframework.security.core.Authentication auth){
+    public ResponseEntity<Set<User>> friends(@PathVariable Long userId, org.springframework.security.core.Authentication auth) {
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
-        return ResponseEntity.ok(userService.getUserById(userId).orElseThrow().getFriends());
+        return ResponseEntity.ok(userService.getFriends(userId));
     }
+
 
     // POST befriend (mutual, no requests)
     @PostMapping("/{userId}/friends/{otherId}")
@@ -179,9 +185,10 @@ public class UserController {
 
     // GET my subscriptions
     @GetMapping("/{userId}/subscriptions")
-    public ResponseEntity<Set<Facility>> subs(@PathVariable Long userId, org.springframework.security.core.Authentication auth){
+    public ResponseEntity<Set<Facility>> subs(@PathVariable Long userId,
+                                              org.springframework.security.core.Authentication auth){
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
-        return ResponseEntity.ok(userService.getUserById(userId).orElseThrow().getSubscriptions());
+        return ResponseEntity.ok(userService.getSubscriptions(userId));
     }
 
     // POST subscribe
@@ -240,6 +247,24 @@ public class UserController {
         userService.deleteProfilePicture(userId);
         return ResponseEntity.noContent().build();
     }
+    // GET /api/users/{userId}/notifications
+    @GetMapping("/{userId}/notifications")
+    public ResponseEntity<?> getNotifications(@PathVariable Long userId,
+                                              org.springframework.security.core.Authentication auth) {
+        if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
+        return ResponseEntity.ok(notificationService.getForUser(userId));
+    }
+
+    // POST /api/users/{userId}/notifications/{notificationId}/read
+    @PostMapping("/{userId}/notifications/{notificationId}/read")
+    public ResponseEntity<Void> markNotificationRead(@PathVariable Long userId,
+                                                     @PathVariable Long notificationId,
+                                                     org.springframework.security.core.Authentication auth) {
+        if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
+        notificationService.markRead(userId, notificationId);
+        return ResponseEntity.noContent().build();
+    }
+
 
 
     private byte[] toCompressedJpeg(MultipartFile file, int maxSize, float quality) throws IOException {

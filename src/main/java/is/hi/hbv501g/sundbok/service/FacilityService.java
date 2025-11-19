@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import is.hi.hbv501g.sundbok.model.Facility;
+import is.hi.hbv501g.sundbok.model.Notification;
 import is.hi.hbv501g.sundbok.repository.FacilityRepository;
+import is.hi.hbv501g.sundbok.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,6 +19,8 @@ import java.util.*;
 public class FacilityService {
 
     private final FacilityRepository facilityRepository;
+    private final UserRepository userRepository;
+    private final NotificationService notificationService;
     private final WebClient web = WebClient.create("https://rsconnect.reykjavik.is");
 
     @Transactional
@@ -64,9 +68,11 @@ public class FacilityService {
         facilityRepository.findAll().forEach(out::add);
         return out;
     }
-    public FacilityService(FacilityRepository facilityRepository) {
+    public FacilityService(FacilityRepository facilityRepository,UserRepository userRepository,NotificationService notificationService) {
 
         this.facilityRepository = facilityRepository;
+        this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     // CREATE - Add new facility
@@ -117,8 +123,23 @@ public class FacilityService {
     public List<Facility.ScheduleRow> replaceSchedule(Long facilityId, List<Facility.ScheduleRow> rows){
         Facility fac = facilityRepository.findById(facilityId).orElseThrow();
         fac.setSchedule(rows);
+
+        //  Notify subscribers that schedule changed
+        var subscribers = new HashSet<>(userRepository.findSubscribersOfFacility(facilityId));
+        if (!subscribers.isEmpty()) {
+            String msg = "Schedule updated for " + fac.getName();
+            notificationService.createForUsers(
+                    subscribers,
+                    Notification.Type.FACILITY_SCHEDULE_UPDATED,
+                    msg,
+                    fac.getId(),
+                    null     // no specific actor
+            );
+        }
+
         return fac.getSchedule();
     }
+
 
     public List<Facility.ScheduleRow> getSchedule(Long facilityId){
         return facilityRepository.findById(facilityId).orElseThrow().getSchedule();
