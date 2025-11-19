@@ -94,7 +94,7 @@ public class UserService {
         userRepository.deleteByName(name);
     }
 
-    // UTILITY - Check if user exists
+    // UTILITY
     public boolean userExists(Long id) {
         return userRepository.existsById(id);
     }
@@ -108,7 +108,6 @@ public class UserService {
         return userRepository.count();
     }
 
-    // Keep your existing method for backward compatibility
     @Deprecated
     public void processUser(User user) {
         createUser(user);
@@ -160,7 +159,7 @@ public class UserService {
         User other = userRepository.findById(otherId).orElseThrow();
         me.getFriends().remove(other); // REMOVE other.getFriends().remove(me);
     }
-    
+
     @Transactional(readOnly = true)
     public Set<Facility> getSubscriptions(Long userId) {
         User u = userRepository.findById(userId).orElseThrow();
