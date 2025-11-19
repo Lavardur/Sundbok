@@ -135,42 +135,42 @@ public class UserController {
         return ResponseEntity.ok(userService.userExists(id));
     }
     // GET my favorites
-    @GetMapping("/users/{userId}/favorites")
+    @GetMapping("/{userId}/favorites")
     public ResponseEntity<Set<Facility>> favorites(@PathVariable Long userId, org.springframework.security.core.Authentication auth){
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
         return ResponseEntity.ok(userService.getUserById(userId).orElseThrow().getFavoriteFacilities());
     }
 
     // POST add favorite
-    @PostMapping("/users/{userId}/favorites/{facilityId}")
+    @PostMapping("/{userId}/favorites/{facilityId}")
     public ResponseEntity<Set<Facility>> addFav(@PathVariable Long userId, @PathVariable Long facilityId, org.springframework.security.core.Authentication auth){
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
         return ResponseEntity.ok(userService.addFavorite(userId, facilityId));
     }
 
     // DELETE remove favorite
-    @DeleteMapping("/users/{userId}/favorites/{facilityId}")
+    @DeleteMapping("/{userId}/favorites/{facilityId}")
     public ResponseEntity<Set<Facility>> rmFav(@PathVariable Long userId, @PathVariable Long facilityId, org.springframework.security.core.Authentication auth){
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
         return ResponseEntity.ok(userService.removeFavorite(userId, facilityId));
     }
 
     // GET my friends
-    @GetMapping("/users/{userId}/friends")
+    @GetMapping("/{userId}/friends")
     public ResponseEntity<Set<User>> friends(@PathVariable Long userId, org.springframework.security.core.Authentication auth){
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
         return ResponseEntity.ok(userService.getUserById(userId).orElseThrow().getFriends());
     }
 
     // POST befriend (mutual, no requests)
-    @PostMapping("/users/{userId}/friends/{otherId}")
+    @PostMapping("/{userId}/friends/{otherId}")
     public ResponseEntity<Set<User>> befriend(@PathVariable Long userId, @PathVariable Long otherId, org.springframework.security.core.Authentication auth){
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
         return ResponseEntity.ok(userService.addFriendship(userId, otherId));
     }
 
     // DELETE unfriend
-    @DeleteMapping("/users/{userId}/friends/{otherId}")
+    @DeleteMapping("/{userId}/friends/{otherId}")
     public ResponseEntity<Void> unfriend(@PathVariable Long userId, @PathVariable Long otherId, org.springframework.security.core.Authentication auth){
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
         userService.removeFriendship(userId, otherId);
@@ -178,21 +178,21 @@ public class UserController {
     }
 
     // GET my subscriptions
-    @GetMapping("/users/{userId}/subscriptions")
+    @GetMapping("/{userId}/subscriptions")
     public ResponseEntity<Set<Facility>> subs(@PathVariable Long userId, org.springframework.security.core.Authentication auth){
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
         return ResponseEntity.ok(userService.getUserById(userId).orElseThrow().getSubscriptions());
     }
 
     // POST subscribe
-    @PostMapping("/users/{userId}/subscriptions/{facilityId}")
+    @PostMapping("/{userId}/subscriptions/{facilityId}")
     public ResponseEntity<Set<Facility>> sub(@PathVariable Long userId, @PathVariable Long facilityId, org.springframework.security.core.Authentication auth){
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
         return ResponseEntity.ok(userService.subscribe(userId, facilityId));
     }
 
     // DELETE unsubscribe
-    @DeleteMapping("/users/{userId}/subscriptions/{facilityId}")
+    @DeleteMapping("/{userId}/subscriptions/{facilityId}")
     public ResponseEntity<Set<Facility>> unsub(@PathVariable Long userId, @PathVariable Long facilityId, org.springframework.security.core.Authentication auth){
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
         return ResponseEntity.ok(userService.unsubscribe(userId, facilityId));
