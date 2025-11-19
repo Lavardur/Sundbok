@@ -136,9 +136,10 @@ public class UserController {
     }
     // GET my favorites
     @GetMapping("/{userId}/favorites")
-    public ResponseEntity<Set<Facility>> favorites(@PathVariable Long userId, org.springframework.security.core.Authentication auth){
+    public ResponseEntity<Set<Facility>> favorites(@PathVariable Long userId,
+                                                   org.springframework.security.core.Authentication auth){
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
-        return ResponseEntity.ok(userService.getUserById(userId).orElseThrow().getFavoriteFacilities());
+        return ResponseEntity.ok(userService.getFavoriteFacilities(userId));
     }
 
     // POST add favorite
@@ -157,10 +158,11 @@ public class UserController {
 
     // GET my friends
     @GetMapping("/{userId}/friends")
-    public ResponseEntity<Set<User>> friends(@PathVariable Long userId, org.springframework.security.core.Authentication auth){
+    public ResponseEntity<Set<User>> friends(@PathVariable Long userId, org.springframework.security.core.Authentication auth) {
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
-        return ResponseEntity.ok(userService.getUserById(userId).orElseThrow().getFriends());
+        return ResponseEntity.ok(userService.getFriends(userId));
     }
+
 
     // POST befriend (mutual, no requests)
     @PostMapping("/{userId}/friends/{otherId}")
@@ -179,9 +181,10 @@ public class UserController {
 
     // GET my subscriptions
     @GetMapping("/{userId}/subscriptions")
-    public ResponseEntity<Set<Facility>> subs(@PathVariable Long userId, org.springframework.security.core.Authentication auth){
+    public ResponseEntity<Set<Facility>> subs(@PathVariable Long userId,
+                                              org.springframework.security.core.Authentication auth){
         if (!isSelf(userId, auth)) return ResponseEntity.status(403).build();
-        return ResponseEntity.ok(userService.getUserById(userId).orElseThrow().getSubscriptions());
+        return ResponseEntity.ok(userService.getSubscriptions(userId));
     }
 
     // POST subscribe

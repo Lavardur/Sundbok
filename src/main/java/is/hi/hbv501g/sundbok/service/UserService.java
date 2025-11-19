@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -116,6 +117,12 @@ public class UserService {
     public Iterable<User> get() {
         return getAllUsers();
     }
+    @Transactional(readOnly = true)
+    public Set<Facility> getFavoriteFacilities(Long userId) {
+        User u = userRepository.findById(userId).orElseThrow();
+        // detach / initialize to avoid lazy issues
+        return new HashSet<>(u.getFavoriteFacilities());
+    }
     @Transactional
     public Set<Facility> addFavorite(Long userId, Long facilityId){
         User u = userRepository.findById(userId).orElseThrow();
@@ -131,6 +138,12 @@ public class UserService {
         u.getFavoriteFacilities().remove(f);
         return u.getFavoriteFacilities();
     }
+    @Transactional(readOnly = true)
+    public Set<User> getFriends(Long userId) {
+        return new HashSet<>(userRepository.findById(userId)
+                .orElseThrow()
+                .getFriends());
+    }
 
     @Transactional
     public Set<User> addFriendship(Long meId, Long otherId){
@@ -138,7 +151,6 @@ public class UserService {
         User me = userRepository.findById(meId).orElseThrow();
         User other = userRepository.findById(otherId).orElseThrow();
         me.getFriends().add(other);
-        other.getFriends().add(me);           // keep it mutual
         return me.getFriends();
     }
 
@@ -146,10 +158,14 @@ public class UserService {
     public void removeFriendship(Long meId, Long otherId){
         User me = userRepository.findById(meId).orElseThrow();
         User other = userRepository.findById(otherId).orElseThrow();
-        me.getFriends().remove(other);
-        other.getFriends().remove(me);
+        me.getFriends().remove(other); // REMOVE other.getFriends().remove(me);
     }
-
+    
+    @Transactional(readOnly = true)
+    public Set<Facility> getSubscriptions(Long userId) {
+        User u = userRepository.findById(userId).orElseThrow();
+        return new HashSet<>(u.getSubscriptions());
+    }
     @Transactional
     public Set<Facility> subscribe(Long userId, Long facilityId){
         User u = userRepository.findById(userId).orElseThrow();
