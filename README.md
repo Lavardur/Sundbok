@@ -31,6 +31,8 @@ Til að keyra þarf að nota spring boot run
 ## API Endpoints
 
 Base URL: `http://localhost:8080`
+Render URL:`https://sundbok-s69y.onrender.com`
+Postgres URL:`host=dpg-d4b1146r433s738kkvmg-a.frankfurt-postgres.render.com port=5432 dbname=sundbok_db user=sundbok_db_user password=L77PObna2NvhqOmPELhmsZbXe1mlLMM0 sslmode=require sslrootcert=none`
 
 ### Users API (`/api/users`)
 
