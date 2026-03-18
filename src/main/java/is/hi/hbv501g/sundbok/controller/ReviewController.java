@@ -14,7 +14,8 @@ import java.util.List;
 public class ReviewController {
 
     private final ReviewService reviewService;
-    public ReviewController(ReviewService reviewService){
+
+    public ReviewController(ReviewService reviewService) {
         this.reviewService = reviewService;
     }
 
@@ -28,18 +29,17 @@ public class ReviewController {
     @GetMapping("/{id}")
     public ResponseEntity<Review> getReviewById(@PathVariable Long id) {
         return reviewService.getReviewById(id)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // GET /api/reviews/facility/{facilityId} - Get reviews for facility
     @GetMapping("/facility/{facilityId}")
     public ResponseEntity<List<Review>> getReviewsByFacility(@PathVariable Long facilityId) {
         List<Review> facilityReviews = reviewService.getReviewsByFacility(facilityId);
-        if(facilityReviews.isEmpty()){
+        if (facilityReviews.isEmpty()) {
             return ResponseEntity.noContent().build();
-        }
-        else{
+        } else {
             return ResponseEntity.ok(facilityReviews);
         }
     }
@@ -47,15 +47,12 @@ public class ReviewController {
     // GET /api/reviews/user/{userId} - Get reviews by user
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Review>> getReviewsByUser(@PathVariable Long userId) {
-         List<Review> userReviews = reviewService.getReviewsByUser(userId);
-                 if(userReviews.isEmpty()){
+        List<Review> userReviews = reviewService.getReviewsByUser(userId);
+        if (userReviews.isEmpty()) {
             return ResponseEntity.noContent().build();
-        }
-        else{
+        } else {
             return ResponseEntity.ok(userReviews);
         }
-         
-
     }
 
     // GET /api/reviews/facility/{facilityId}/average-rating - Get average rating
@@ -63,35 +60,33 @@ public class ReviewController {
     public ResponseEntity<Double> getAverageRating(@PathVariable Long facilityId) {
         double average = reviewService.getAverageFacilityRating(facilityId);
         if (Double.isNaN(average)) {
-            return ResponseEntity.noContent().build(); // 204 if no reviews
+            return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.ok(average);        // 200 OK with average
+            return ResponseEntity.ok(average);
         }
     }
 
-    // POST /api/reviews - Create new review
+    // POST /api/reviews?userId={userId}&facilityId={facilityId} - Create new review
     @PostMapping
-    public ResponseEntity<Review> createReview(@RequestBody Review review) {
-        try{
-          Review newReview = reviewService.createReview(review);
-          return ResponseEntity.status(HttpStatus.CREATED).body(newReview);
-
-        }
-        catch(RuntimeException e){
+    public ResponseEntity<Review> createReview(
+            @RequestParam Long userId,
+            @RequestParam Long facilityId,
+            @RequestBody Review review) {
+        try {
+            Review newReview = reviewService.createReview(userId, facilityId, review);
+            return ResponseEntity.status(HttpStatus.CREATED).body(newReview);
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
-        
     }
 
-    // PUT /api/reviews/{id} - Update review
+    // PUT /api/reviews/{id} - Update review (only rating and comment)
     @PutMapping("/{id}")
     public ResponseEntity<Review> updateReview(@PathVariable Long id, @RequestBody Review review) {
-        try{
-           Review updatedReview = reviewService.updateReview(id, review);
-           return ResponseEntity.ok(updatedReview);
-
-        }
-        catch(RuntimeException e){
+        try {
+            Review updatedReview = reviewService.updateReview(id, review);
+            return ResponseEntity.ok(updatedReview);
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -99,14 +94,11 @@ public class ReviewController {
     // DELETE /api/reviews/{id} - Delete review
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
-        try{
+        try {
             reviewService.deleteReview(id);
             return ResponseEntity.noContent().build();
-        }
-        catch(RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
-
         }
-
     }
 }
