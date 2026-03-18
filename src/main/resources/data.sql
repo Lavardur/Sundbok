@@ -4,12 +4,12 @@ TRUNCATE TABLE reviews, checkins, pools, users, amenities RESTART IDENTITY CASCA
 
 -- Insert sample data (IDs will start at 1)
 INSERT INTO users (name, password, email, is_admin) VALUES
-    ('Anton', 'antonadmin123', 'anton@example.com', true),
-    ('Arnar', 'arnaradmin123', 'arnar@example.com', true),
-    ('Mikael', 'mikaeladmin123', 'mikael@example.com', true),
-    ('Sævar', 'saevaradmin123', 'saevar@example.com', true),
-    ('Alice', 'secret123', 'alice@example.com', false),
-    ('Bob',   'bobpass',   'bob@example.com',   false);
+    ('Anton', '$2b$10$xa9sV6ZGGcpvXCkEgige3u7/3l6Azm.75ir962IraqiTOL7s1UGR6', 'anton@example.com', true),
+    ('Arnar', '$2b$10$xd/5rj/DBE0VmN2iHw5CFO.Q.QBfF2VoGa7aSI4sfnw0X5hSM9bMW', 'arnar@example.com', true),
+    ('Mikael', '$2b$10$Wvu.sWtfMuPbxan.DUpuxec2l1f7SxSTtnVudglusXQbCzQEU5OSS', 'mikael@example.com', true),
+    ('Sævar', '$2b$10$Ruuwiw7tMY5fC6Gu7qGUJepHdDY.QAv2E8y7wyPXBxc5s7AeSnHGe', 'saevar@example.com', true),
+    ('Alice', '$2b$10$19fG4YS3PYxm/WfVoxi5IebZPVNREu.YKGlP0PmbV/gWKL./NBOCi', 'alice@example.com', false),
+    ('Bob',   '$2b$10$kMfrWKrGXzEScjWAKfwmruMczYVtTWOH1KHI8H2VRcxUetEBUt88i',   'bob@example.com',   false);
 
 INSERT INTO pools (name, address) VALUES ('Árbæjarlaug', 'Fylkisvegur 9, 110 Reykjavík');
 INSERT INTO pools (name, address) VALUES ('Breiðholtslaug', 'Austurberg 5, 111 Reykjavík');

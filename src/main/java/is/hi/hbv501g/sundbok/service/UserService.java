@@ -42,7 +42,6 @@ public class UserService {
         }
         user.setPassword(ensureHashed(user.getPassword()));
         if (user.getIsAdmin() == null) user.setIsAdmin(false);
-        System.out.println("Registering user: " + user);
         return userRepository.save(user);
     }
 
@@ -150,6 +149,7 @@ public class UserService {
         User me = userRepository.findById(meId).orElseThrow();
         User other = userRepository.findById(otherId).orElseThrow();
         me.getFriends().add(other);
+        other.getFriends().add(me);
         return me.getFriends();
     }
 
@@ -157,7 +157,8 @@ public class UserService {
     public void removeFriendship(Long meId, Long otherId){
         User me = userRepository.findById(meId).orElseThrow();
         User other = userRepository.findById(otherId).orElseThrow();
-        me.getFriends().remove(other); // REMOVE other.getFriends().remove(me);
+        me.getFriends().remove(other);
+        other.getFriends().remove(me);
     }
 
     @Transactional(readOnly = true)

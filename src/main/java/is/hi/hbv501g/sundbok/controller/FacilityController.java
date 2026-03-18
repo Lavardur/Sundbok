@@ -89,8 +89,6 @@ public class FacilityController {
             @RequestParam(name = "radius") Optional<Double> radius,
             @RequestParam Optional<String> search
     ) {
-        System.out.println("params -> lat=" + latitude + ", lon=" + longitude + ", radius=" + radius + ", search=" + search);
-
         if (search.isPresent() && !search.get().isBlank()) {
             return ResponseEntity.ok(facilityService.searchByName(search.get()));
         }

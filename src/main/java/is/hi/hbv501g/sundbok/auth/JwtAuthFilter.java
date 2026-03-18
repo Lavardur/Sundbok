@@ -44,7 +44,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
                 var claims = jwt.parse(token).getBody();
-                Long id = claims.get("id", Integer.class).longValue();
+                Long id = claims.get("id", Long.class);
 
                 var optUser = users.getUserById(id);
                 if (optUser.isPresent()) {
